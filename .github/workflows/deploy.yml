@@ -1,0 +1,58 @@
+name: Deploy IPTV Spider
+
+on:
+  push:
+    branches:
+      - main  # 当有代码推送到 main 分支时触发
+  schedule:
+    - cron: '0 2 * * *'  # 每天凌晨 2 点自动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 运行环境
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4  # 检出代码
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9  # 设置 Python 版本
+
+      - name: Install Dependencies
+        run: |
+          pip3 install bs4
+          pip3 install m3u8
+          pip3 install requests  # 安装依赖
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg  # 安装 FFmpeg
+
+      - name: Set up MySQL
+        run: |
+          # 假设您已经创建了数据库，并将配置保存在 Secrets 中
+          echo "Creating database..."
+          mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS iptv;"
+          echo "Importing database schema..."
+          mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} iptv < data/iptv_data.sql
+
+      - name: Modify Configuration
+        run: |
+          # 修改配置文件，可以使用 Secrets 存储敏感信息
+          sed -i "s/your_username/${{ secrets.DB_USER }}/g" hotels.py
+          sed -i "s/your_password/${{ secrets.DB_PASSWORD }}/g" hotels.py
+          sed -i "s/your_username/${{ secrets.DB_USER }}/g" multicast.py
+          sed -i "s/your_password/${{ secrets.DB_PASSWORD }}/g" multicast.py
+
+      - name: Run Spider
+        run: |
+          python3 main.py  # 运行主程序
+
+      - name: Upload Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: iptv-sources
+          path: source/iptv.txt  # 上传生成的文件到 GitHub Actions 的 Artifact
