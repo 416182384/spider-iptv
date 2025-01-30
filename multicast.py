@@ -110,7 +110,7 @@ def multicast_udpxy():
     T = tools.Tools()
     # 调用360网络测绘接口
     api_url="https://quake.360.net/api/v3/search/quake_service"
-    api_token="你自己https://quake.360.net的token"
+    api_token = os.getenv('API_TOKEN')  # 从环境变量中获取 API_TOKEN
     
     try:
         # 从连接池获取连接
