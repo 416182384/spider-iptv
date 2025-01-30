@@ -36,8 +36,14 @@ jobs:
           pip3 install bs4
           pip3 install m3u8
           pip3 install requests
-          pip3 install mysql-connector-python  # 添加 mysql-connector-python
-          pip3 install opencv-python  # 添加 OpenCV
+          pip3 install mysql-connector-python  # MySQL 连接器
+          pip3 install pymysql  # MySQL 客户端
+          pip3 install sqlalchemy  # SQL 工具包和 ORM
+          pip3 install requests-html  # 网页解析工具
+          pip3 install lxml  # HTML/XML 解析器
+          pip3 install aiomysql  # 异步 MySQL 客户端
+          pip3 install opencv-python  # OpenCV
+          pip3 install timeout-decorator  # 超时装饰器
 
       - name: Install FFmpeg
         run: |
