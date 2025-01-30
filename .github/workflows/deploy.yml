@@ -11,21 +11,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest  # 使用最新的 Ubuntu 运行环境
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: your_root_password
+          MYSQL_USER: iptv_user
+          MYSQL_PASSWORD: your_password
+          MYSQL_DATABASE: iptv
+        ports:
+          - 3306:3306
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4  # 检出代码
-
-      - name: Set up Docker
-        uses: docker-practice/setup-docker@v2  # 设置 Docker 环境
-
-      - name: Run MySQL Container
-        run: |
-          docker run -d -p 3306:3306 --name mysql-container \
-            -e MYSQL_ROOT_PASSWORD=your_root_password \
-            -e MYSQL_USER=iptv_user \
-            -e MYSQL_PASSWORD=your_password \
-            -e MYSQL_DATABASE=iptv \
-            mysql:5.7  # 启动 MySQL 容器
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -45,8 +44,18 @@ jobs:
 
       - name: Run Spider
         run: |
+          # 获取 MySQL 服务的连接信息
+          MYSQL_HOST=localhost
+          MYSQL_USER=iptv_user
+          MYSQL_PASSWORD=your_password
+          MYSQL_DATABASE=iptv
+
+          # 导出 API_TOKEN
           export API_TOKEN=${{ secrets.API_TOKEN }}
-          python3 main.py  # 运行主程序
+          # 导入数据库结构
+          mysql -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < data/iptv_data.sql
+          # 运行主程序
+          python3 main.py
 
       - name: Upload Result
         uses: actions/upload-artifact@v3
