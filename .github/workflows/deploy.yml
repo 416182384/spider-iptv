@@ -45,6 +45,7 @@ jobs:
 
       - name: Run Spider
         run: |
+          export API_TOKEN=${{ secrets.API_TOKEN }}
           python3 main.py  # 运行主程序
 
       - name: Upload Result
