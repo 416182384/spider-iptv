@@ -11,6 +11,7 @@ from queue import Queue
 from datetime import datetime, timedelta
 from timeout_decorator import timeout, TimeoutError
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import random  # 新增，用于 Python 中实现随机排序
 
 # 创建连接池
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
@@ -307,8 +308,8 @@ def creat_iptvs():
         # 创建游标对象
         cursor = cnx.cursor()
         
-        # 查询频道分类
-        query_category = "SELECT type FROM iptv_category WHERE enable = 1 GROUP BY type ORDER BY id;"
+        # 修改后的查询语句
+        query_category = "SELECT type, id FROM iptv_category WHERE enable = 1 GROUP BY type, id ORDER BY id;"
         cursor.execute(query_category)
         categories = cursor.fetchall()
 
@@ -338,86 +339,7 @@ def creat_iptvs():
                 chl_name = info[1]
                 chl_type = info[2]
                 
-                query_name_url = "SELECT v.name, v.url, v.id, v.type, v.width, v.speed FROM (SELECT c.name, c.url, c.id, c.type, c.width, c.speed, c.sign, c.time from iptv_channels c "
-                query_name_url += "WHERE c.sign >= 0 and c.speed > 0) as v INNER JOIN iptv_category t ON v.name = t.name where ((v.type in ('央视频道', '卫视频道') "
-                query_name_url += "and v.width >= 1280) or (v.type not in ('央视频道', '卫视频道') and v.width >= 1280)) and t.name = %s ORDER BY RAND();"
-                # ORDER BY v.width DESC, v.speed DESC
-                cursor.execute(query_name_url, (chl_name,))
-                channels = cursor.fetchall()
-                
-                number = 0
-                for i, channel in enumerate(channels):
-                    name = channel[0]
-                    url = channel[1]
-                    chl_id = channel[2]
-                    width = channel[4]
-                    
-                    # 将更新标识添加到列表
-                    update_list.append((current_time, chl_id))
-                    # 检查是否已处理过该频道记录
-                    if (name, url) not in processed_channels:
-                        # 将已处理的频道记录添加到集合中
-                        processed_channels.add((name, url))
-                        result_pub += f"{name},{url}\n"
-                        number += 1
-                    else:
-                        # print(f"{current_time} 频道地址重复或无效：{name},{url}")
-                        continue
-                
-                print(f"{current_time} 频道名称{chl_id}：{chl_name}，有效源数量：{number}")
-                
-                if len(update_list) > 0:
-                    # 执行批量更新
-                    cursor.executemany(update_channel, update_list)
-                    # 提交数据库事务
-                    cnx.commit()
-                    print(f"{current_time} 共 {len(update_list)} 行数据, 批量频道时间修改提交成功")
-
-        # 循环查询频道分类的名称和URL
-        update_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-        result_pub += f"更新时间,#genre#\n{update_time},https://taoiptv.com/time.mp4\n"
-
-        # 将结果写入文件
-        output_file = base_source + 'iptv.txt'
-        
-        # txt格式写入
-        with open(output_file, 'w') as f:
-            f.write(result_pub)
-        print(f"IPTV数据文件已生成：{output_file}")
-        
-        # 调用函数进行转换
-        T.convertToM3u(output_file)
-        
-    except mysql.connector.Error as e:
-        print(f"{current_time} 执行数据库操作时, 发生异常: {str(e)}")
-    finally:
-        # 关闭游标和连接
-        cursor.close()
-        cnx.close()
-
-def main_function():
-    # 获取当前时间
-    current_time = datetime.now()
-    hour = current_time.hour
-    try:
-        # 从连接池获取连接
-        cnx = connection_pool.get_connection()
-        # 创建游标对象
-        cursor = cnx.cursor()
-        
-        # 扫描播放速度
-        sweep_speeds()
-        # 直播资源处理
-        internet_lives()
-        # 生成IPTV资源
-        creat_iptvs()
-        
-    except mysql.connector.Error as e:
-        print(f"{current_time} 执行数据库操作时, 发生异常: {str(e)}")
-    finally:
-        # 关闭游标和连接
-        cursor.close()
-        cnx.close()
-
-# 执行主程序函数
-main_function()
+                # 修改前的查询语句
+                # query_name_url = "SELECT v.name, v.url, v.id, v.type, v.width, v.speed FROM (SELECT c.name, c.url, c.id, c.type, c.width, c.speed, c.sign, c.time from iptv_channels c "
+                # query_name_url += "WHERE c.sign >= 0 and c.speed > 0) as v INNER JOIN iptv_category t ON v.name = t.name where ((v.type in ('央视频道', '卫视频道') "
+                # query_name_url += "and v.width >= 1280) or (v.type not in ('央视频道', '卫视频道
