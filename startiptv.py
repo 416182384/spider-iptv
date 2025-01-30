@@ -9,7 +9,7 @@ from mysql.connector import pooling
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="iptv_pool",
     pool_size=5,
-    host='192.168.199.119',
+    host='127.0.0.1',
     user='iptv',
     password='iptv',
     database='iptv'
