@@ -76,7 +76,7 @@ jobs:
           python3 main.py
 
       - name: Upload Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: iptv-sources
           path: source/iptv.txt  # 上传生成的文件到 GitHub Actions 的 Artifact
