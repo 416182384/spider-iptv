@@ -45,7 +45,7 @@ jobs:
       - name: Run Spider
         run: |
           # 获取 MySQL 服务的连接信息
-          MYSQL_HOST=localhost
+          MYSQL_HOST=mysql
           MYSQL_USER=iptv_user
           MYSQL_PASSWORD=your_password
           MYSQL_DATABASE=iptv
