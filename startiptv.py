@@ -10,8 +10,8 @@ connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="iptv_pool",
     pool_size=5,
     host='127.0.0.1',
-    user='iptv',
-    password='iptv',
+    user='iptv_user',
+    password='your_password',
     database='iptv'
 )
 
