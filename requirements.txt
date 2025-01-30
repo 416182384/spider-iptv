@@ -1,0 +1,11 @@
+bs4
+m3u8
+requests
+mysql-connector-python
+pymysql
+sqlalchemy
+requests-html
+lxml
+aiomysql
+opencv-python
+timeout-decorator
