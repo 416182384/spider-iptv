@@ -308,7 +308,7 @@ def creat_iptvs():
         cursor = cnx.cursor()
         
         # 查询频道分类
-        query_category = "SELECT type FROM iptv_category WHERE enable = 1 GROUP BY type ORDER BY id;"
+        query_category = "SELECT type, MIN(id) as min_id FROM iptv_category WHERE enable = 1 GROUP BY type ORDER BY min_id;"
         cursor.execute(query_category)
         categories = cursor.fetchall()
 
