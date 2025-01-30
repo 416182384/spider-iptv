@@ -35,7 +35,8 @@ jobs:
         run: |
           pip3 install bs4
           pip3 install m3u8
-          pip3 install requests  # 安装依赖
+          pip3 install requests
+          pip3 install mysql-connector-python  # 添加 mysql-connector-python
 
       - name: Install FFmpeg
         run: |
