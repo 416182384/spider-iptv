@@ -16,9 +16,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="iptv_pool",
     pool_size=10,
-    host='192.168.199.119',
-    user='iptv',
-    password='iptv',
+    host='127.0.0.1',
+    user='iptv_user',
+    password='your_password',
     database='iptv'
 )
 
